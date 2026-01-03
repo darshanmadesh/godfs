@@ -1,0 +1,90 @@
+syntax = "proto3";
+
+package dfs;
+
+option go_package = "github.com/darshanmadesh/godfs/api";
+
+// FileService defines the main DFS operations
+service FileService {
+  // Upload a file to the DFS
+  rpc Upload(stream UploadRequest) returns (UploadResponse);
+
+  // Download a file from the DFS
+  rpc Download(DownloadRequest) returns (stream DownloadResponse);
+
+  // List all files in the DFS
+  rpc List(ListRequest) returns (ListResponse);
+
+  // Delete a file from the DFS
+  rpc Delete(DeleteRequest) returns (DeleteResponse);
+
+  // Get file metadata
+  rpc Stat(StatRequest) returns (StatResponse);
+}
+
+// Upload messages
+message UploadRequest {
+  oneof data {
+    FileMetadata metadata = 1;  // First message contains metadata
+    bytes chunk = 2;            // Subsequent messages contain file chunks
+  }
+}
+
+message FileMetadata {
+  string filename = 1;
+  int64 size = 2;
+}
+
+message UploadResponse {
+  bool success = 1;
+  string message = 2;
+  string file_id = 3;
+}
+
+// Download messages
+message DownloadRequest {
+  string filename = 1;
+}
+
+message DownloadResponse {
+  oneof data {
+    FileMetadata metadata = 1;  // First message contains metadata
+    bytes chunk = 2;            // Subsequent messages contain file chunks
+  }
+}
+
+// List messages
+message ListRequest {
+  string prefix = 1;  // Optional prefix filter
+}
+
+message ListResponse {
+  repeated FileInfo files = 1;
+}
+
+message FileInfo {
+  string filename = 1;
+  int64 size = 2;
+  int64 created_at = 3;   // Unix timestamp
+  int64 modified_at = 4;  // Unix timestamp
+}
+
+// Delete messages
+message DeleteRequest {
+  string filename = 1;
+}
+
+message DeleteResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+// Stat messages
+message StatRequest {
+  string filename = 1;
+}
+
+message StatResponse {
+  bool exists = 1;
+  FileInfo file = 2;
+}

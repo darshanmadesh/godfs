@@ -30,3 +30,12 @@ go.work.sum
 # Editor/IDE
 # .idea/
 # .vscode/
+
+# Project specific
+bin/
+data/
+explanation/
+
+# OS
+.DS_Store
+Thumbs.db
